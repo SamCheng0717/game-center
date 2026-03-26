@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>扫雷 - 骚雷小游戏</title>
+  <meta name="description" content="手机扫雷游戏，支持离线，四档难度，放大镜精准操作">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0d0d">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="canonical" href="/games/minesweeper/">
+  <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="/shared/themes.css">
+  <link rel="stylesheet" href="/shared/components.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-layout">
+
+    <!-- 顶部信息栏 -->
+    <div class="info-bar">
+      <div class="info-counter" id="mine-count">010</div>
+      <button class="info-reset-btn" id="reset-btn" aria-label="重置游戏">🙂</button>
+      <div class="info-counter" id="timer">000</div>
+      <button class="theme-toggle-btn" id="theme-btn" aria-label="切换主题">🎨</button>
+    </div>
+
+    <!-- 难度选择 -->
+    <div class="difficulty-bar">
+      <button class="diff-btn active" data-diff="8">入门 8×8</button>
+      <button class="diff-btn" data-diff="16">初级 16×16</button>
+      <button class="diff-btn" data-diff="32">中级 32×32</button>
+      <button class="diff-btn" data-diff="64">高级 64×64</button>
+    </div>
+
+    <!-- 雷区 -->
+    <div class="mine-grid-wrapper" id="grid-wrapper">
+      <div class="mine-grid" id="mine-grid"></div>
+      <!-- 放大镜 -->
+      <div class="magnifier" id="magnifier">
+        <div class="magnifier-content" id="magnifier-content"></div>
+      </div>
+      <!-- 结果覆盖层 -->
+      <div class="result-overlay" id="result-overlay">
+        <h2 id="result-text"></h2>
+        <button id="result-reset-btn">再来一局</button>
+      </div>
+    </div>
+
+    <!-- 底部工具栏 -->
+    <div class="toolbar">
+      <button class="toolbar-btn active" data-mode="reveal" id="btn-reveal">翻开</button>
+      <button class="toolbar-btn" data-mode="flag"   id="btn-flag">插旗</button>
+      <button class="toolbar-btn" data-mode="position" id="btn-pos">位置</button>
+    </div>
+
+  </div>
+
+  <!-- 主题选择器抽屉 -->
+  <div class="theme-overlay" id="theme-overlay">
+    <div class="theme-drawer" id="theme-drawer">
+      <h3>选择主题</h3>
+      <div class="theme-grid" id="theme-grid"></div>
+    </div>
+  </div>
+
+  <!-- PWA 提示横幅 -->
+  <div class="pwa-banner" id="pwa-banner">
+    <span>📱 添加到主屏幕后进度永久保存</span>
+    <button onclick="document.getElementById('pwa-banner').classList.remove('show')">×</button>
+  </div>
+
+  <script type="module">
+    import { MinesweeperGame, MODES, STATES } from '/games/minesweeper/game.js';
+    import { initThemeSwitcher, showPWABanner } from '/shared/theme-switcher.js';
+
+    // ===== 常量 =====
+    const DIFFICULTIES = {
+      8:  { rows: 8,  cols: 8,  mines: 10 },
+      16: { rows: 16, cols: 16, mines: 40 },
+      32: { rows: 32, cols: 32, mines: 100 },
+      64: { rows: 64, cols: 64, mines: 400 },
+    };
+    const STORAGE_GAME_KEY = 'sao-lei-game';
+    const STORAGE_DIFF_KEY = 'sao-lei-difficulty';
+    const STORAGE_BEST_KEY = 'sao-lei-best';
+
+    // ===== 状态 =====
+    let game;
+    let currentDiff = parseInt(localStorage.getItem(STORAGE_DIFF_KEY) || '8');
+    let timerInterval = null;
+
+    // ===== DOM 引用 =====
+    const gridEl      = document.getElementById('mine-grid');
+    const mineCountEl = document.getElementById('mine-count');
+    const timerEl     = document.getElementById('timer');
+    const resetBtn    = document.getElementById('reset-btn');
+    const resultOverlay = document.getElementById('result-overlay');
+    const resultText  = document.getElementById('result-text');
+    const magnifier   = document.getElementById('magnifier');
+    const magnifierContent = document.getElementById('magnifier-content');
+
+    // ===== 初始化 =====
+    initThemeSwitcher('#theme-btn', '#theme-overlay', '#theme-drawer', '#theme-grid');
+    showPWABanner();
+    initDifficultyButtons();
+    loadOrNewGame();
+    initTouchHandlers();
+
+    // ===== 难度按钮 =====
+    function initDifficultyButtons() {
+      document.querySelectorAll('.diff-btn').forEach(btn => {
+        const d = parseInt(btn.dataset.diff);
+        if (d === currentDiff) btn.classList.add('active');
+        else btn.classList.remove('active');
+        btn.addEventListener('click', () => {
+          if (d === currentDiff) return;
+          currentDiff = d;
+          localStorage.setItem(STORAGE_DIFF_KEY, d);
+          document.querySelectorAll('.diff-btn').forEach(b =>
+            b.classList.toggle('active', parseInt(b.dataset.diff) === d)
+          );
+          newGame();
+        });
+      });
+    }
+
+    // ===== 游戏初始化 =====
+    function newGame() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      localStorage.removeItem(STORAGE_GAME_KEY);
+      const { rows, cols, mines } = DIFFICULTIES[currentDiff];
+      game = new MinesweeperGame(rows, cols, mines);
+      renderGrid();
+      updateInfoBar();
+      resultOverlay.classList.remove('show');
+      resetBtn.textContent = '🙂';
+    }
+
+    function loadOrNewGame() {
+      const saved = localStorage.getItem(STORAGE_GAME_KEY);
+      if (saved) {
+        try {
+          game = MinesweeperGame.fromJSON(saved);
+          // 验证难度一致
+          if (game.cols !== currentDiff) { newGame(); return; }
+          renderGrid();
+          updateInfoBar();
+          if (game.state === STATES.PLAYING) {
+            // 计时器暂停，等用户点击雷区继续
+            // (game.resumeTimer 将在首次触摸时调用)
+          }
+          return;
+        } catch(e) { /* 存档损坏，新游戏 */ }
+      }
+      newGame();
+    }
+
+    // ===== 渲染网格 =====
+    function renderGrid() {
+      const cellSize = currentDiff === 8 ? 44 : Math.floor(358 / currentDiff);
+      document.documentElement.style.setProperty('--cell-size', cellSize + 'px');
+      gridEl.style.gridTemplateColumns = `repeat(${game.cols}, ${cellSize}px)`;
+      gridEl.innerHTML = '';
+      game.cells.forEach((cell, i) => {
+        const el = document.createElement('div');
+        el.className = 'cell';
+        el.dataset.idx = i;
+        updateCellEl(el, cell);
+        gridEl.appendChild(el);
+      });
+    }
+
+    function updateCellEl(el, cell) {
+      el.className = 'cell';
+      if (cell.revealed) {
+        el.classList.add('revealed');
+        if (cell.mine) {
+          el.classList.add('mine-cell');
+          el.textContent = '💣';
+        } else if (cell.neighborCount > 0) {
+          el.textContent = cell.neighborCount;
+          el.dataset.num = cell.neighborCount;
+        } else {
+          el.textContent = '';
+        }
+      } else if (cell.flagged) {
+        el.classList.add('flagged');
+        el.textContent = '';
+      } else {
+        el.textContent = '';
+      }
+      // 位置光标
+      const cellIdx = parseInt(el.dataset.idx);
+      if (cellIdx === game.cursor) el.classList.add('cursor');
+    }
+
+    function refreshAllCells() {
+      const cells = gridEl.querySelectorAll('.cell');
+      game.cells.forEach((cell, i) => updateCellEl(cells[i], cell));
+    }
+
+    // ===== 信息栏 =====
+    function updateInfoBar() {
+      mineCountEl.textContent = String(Math.max(0, game.remainingMines)).padStart(3, '0');
+      timerEl.textContent = String(Math.min(999, game.elapsed)).padStart(3, '0');
+    }
+
+    function startUITimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timerEl.textContent = String(Math.min(999, game.elapsed)).padStart(3, '0');
+      }, 500);
+    }
+
+    // ===== 重置 =====
+    resetBtn.addEventListener('click', newGame);
+    document.getElementById('result-reset-btn').addEventListener('click', newGame);
+
+    // ===== 模式切换 =====
+    document.querySelectorAll('.toolbar-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        game.setMode(MODES[mode.toUpperCase()]);
+        document.querySelectorAll('.toolbar-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.mode === mode)
+        );
+      });
+    });
+
+    // ===== 处理游戏动作 =====
+    function handleCellAction(idx) {
+      if (game.state === STATES.WON || game.state === STATES.LOST) return;
+
+      const wasIdle = game.state === STATES.IDLE;
+
+      if (game.mode === MODES.REVEAL) {
+        game.reveal(idx);
+      } else if (game.mode === MODES.FLAG) {
+        game.toggleFlag(idx);
+      } else if (game.mode === MODES.POSITION) {
+        game.setCursor(idx);
+        refreshAllCells();
+        updateInfoBar();
+        return; // 位置模式不保存进度也不检查胜负
+      }
+
+      // 首次点击后启动 UI 计时器
+      if (wasIdle && game.state === STATES.PLAYING) {
+        startUITimer();
+        game.resumeTimer();
+      }
+
+      refreshAllCells();
+      updateInfoBar();
+      saveGame();
+      checkGameEnd();
+    }
+
+    function checkGameEnd() {
+      if (game.state === STATES.WON) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        resetBtn.textContent = '😎';
+        resultText.textContent = '🎉 成功排雷！';
+        resultOverlay.classList.add('show');
+        saveBestTime();
+        localStorage.removeItem(STORAGE_GAME_KEY);
+      } else if (game.state === STATES.LOST) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        resetBtn.textContent = '😵';
+        resultText.textContent = '💥 踩到地雷！';
+        resultOverlay.classList.add('show');
+        localStorage.removeItem(STORAGE_GAME_KEY);
+      }
+    }
+
+    function saveBestTime() {
+      const key = STORAGE_BEST_KEY + '-' + currentDiff;
+      const best = parseInt(localStorage.getItem(key) || '9999');
+      if (game.elapsed < best) localStorage.setItem(key, game.elapsed);
+    }
+
+    function saveGame() {
+      if (game.state === STATES.PLAYING) {
+        localStorage.setItem(STORAGE_GAME_KEY, game.toJSON());
+      }
+    }
+
+    // ===== 触摸事件处理（含放大镜）=====
+    function initTouchHandlers() {
+      const wrapper = document.getElementById('grid-wrapper');
+      const MAGNIFIER_ENABLED_DIFFS = [16, 32, 64];
+      const useMagnifier = () => MAGNIFIER_ENABLED_DIFFS.includes(currentDiff);
+      const DRAG_THRESHOLD = 5; // px
+
+      let touchStartX = 0, touchStartY = 0;
+      let isDragging = false;
+      let lastCellIdx = -1;
+
+      function getCellIdxFromPoint(x, y) {
+        const gridRect = gridEl.getBoundingClientRect();
+        const relX = x - gridRect.left;
+        const relY = y - gridRect.top;
+        const cellSize = currentDiff === 8 ? 44 : Math.floor(358 / currentDiff);
+        const col = Math.floor(relX / cellSize);
+        const row = Math.floor(relY / cellSize);
+        if (col < 0 || col >= game.cols || row < 0 || row >= game.rows) return -1;
+        return row * game.cols + col;
+      }
+
+      function showMagnifier(touchX, touchY, targetIdx) {
+        if (!useMagnifier() || targetIdx < 0) {
+          magnifier.classList.remove('visible');
+          return;
+        }
+
+        const cellSize = Math.floor(358 / currentDiff);
+        const ZOOM_CELLS = 5; // 显示 5x5 区域
+        const ZOOM_SCALE = 3;
+        const targetRow = game.row(targetIdx);
+        const targetCol = game.col(targetIdx);
+
+        // 构建 5x5 格子视图
+        magnifierContent.style.gridTemplateColumns = `repeat(5, ${cellSize}px)`;
+        magnifierContent.innerHTML = '';
+        for (let dr = -2; dr <= 2; dr++) {
+          for (let dc = -2; dc <= 2; dc++) {
+            const r = targetRow + dr, c = targetCol + dc;
+            const div = document.createElement('div');
+            div.className = 'cell';
+            div.style.width = cellSize + 'px';
+            div.style.height = cellSize + 'px';
+            div.style.fontSize = (cellSize * 0.55) + 'px';
+            if (r < 0 || r >= game.rows || c < 0 || c >= game.cols) {
+              div.style.background = 'var(--bg-primary)';
+            } else {
+              const idx = game.idx(r, c);
+              updateCellEl(div, game.cells[idx]);
+              div.dataset.idx = idx;
+              if (dr === 0 && dc === 0) div.classList.add('cursor');
+            }
+            magnifierContent.appendChild(div);
+          }
+        }
+
+        // 缩放
+        const contentSize = cellSize * ZOOM_CELLS;
+        const scale = 120 / contentSize * ZOOM_SCALE;
+        const offset = -(contentSize / 2) + (120 / (2 * scale));
+        magnifierContent.style.transform = `scale(${scale})`;
+        magnifierContent.style.left = offset + 'px';
+        magnifierContent.style.top  = offset + 'px';
+
+        // 定位放大镜（在手指上方 80px，自动翻转到下方处理边缘情况）
+        const wrapperRect = wrapper.getBoundingClientRect();
+        let mx = touchX - wrapperRect.left - 60;
+        let my = touchY - wrapperRect.top - 80 - 60;
+        // 左右边界夹紧
+        mx = Math.max(0, Math.min(wrapperRect.width - 120, mx));
+        // 上边界不足时翻转到手指下方显示
+        if (my < 0) {
+          my = touchY - wrapperRect.top + 20; // 显示在手指下方 20px
+        }
+        // 下边界夹紧
+        my = Math.min(wrapperRect.height - 120, my);
+        my = Math.max(0, my);
+        magnifier.style.left = mx + 'px';
+        magnifier.style.top  = my + 'px';
+        magnifier.classList.add('visible');
+      }
+
+      wrapper.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        isDragging = false;
+        lastCellIdx = getCellIdxFromPoint(touch.clientX, touch.clientY);
+
+        // 恢复暂停的计时器（从存档加载后首次有效触摸）
+        // 位置模式不启动计时器，避免用户仅定位光标就意外开始计时
+        if (game.state === STATES.PLAYING && !timerInterval && game.mode !== MODES.POSITION) {
+          game.resumeTimer();
+          startUITimer();
+        }
+
+        if (useMagnifier() && lastCellIdx >= 0) {
+          showMagnifier(touch.clientX, touch.clientY, lastCellIdx);
+        }
+      }, { passive: false });
+
+      wrapper.addEventListener('touchmove', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+        if (!isDragging && Math.sqrt(dx*dx + dy*dy) >= DRAG_THRESHOLD) {
+          isDragging = true;
+        }
+        const cellIdx = getCellIdxFromPoint(touch.clientX, touch.clientY);
+        if (cellIdx >= 0 && cellIdx !== lastCellIdx) {
+          lastCellIdx = cellIdx;
+          if (game.mode === MODES.POSITION) {
+            game.setCursor(cellIdx);
+            refreshAllCells();
+          }
+        }
+        if (useMagnifier() && lastCellIdx >= 0) {
+          showMagnifier(touch.clientX, touch.clientY, lastCellIdx);
+        }
+      }, { passive: false });
+
+      wrapper.addEventListener('touchend', e => {
+        e.preventDefault();
+        magnifier.classList.remove('visible');
+        if (lastCellIdx >= 0) {
+          handleCellAction(lastCellIdx);
+        }
+        lastCellIdx = -1;
+      }, { passive: false });
+    }
+
+    // ===== 注册 Service Worker =====
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
