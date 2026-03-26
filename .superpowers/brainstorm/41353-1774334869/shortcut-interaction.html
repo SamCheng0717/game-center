@@ -1,0 +1,56 @@
+<h2>底部快捷键的交互方式</h2>
+<p class="subtitle">点击快捷键切换"点击雷区的状态"——哪种理解是你想要的？</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>三模式切换（我的理解）</h3>
+      <p>底部固定三个按钮，<strong>当前激活的模式</strong>决定点击格子的效果：</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-top:8px;font-family:monospace;font-size:12px">
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:8px">
+          <div style="background:#007aff;color:white;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600">翻开</div>
+          <div style="background:#e0e0e0;color:#666;padding:6px 16px;border-radius:8px;font-size:13px">插旗</div>
+          <div style="background:#e0e0e0;color:#666;padding:6px 16px;border-radius:8px;font-size:13px">位置</div>
+        </div>
+        <div style="color:#333;font-size:11px;text-align:center">当前模式：翻开 → 点格子 = 揭开</div>
+      </div>
+      <ul style="margin-top:8px;padding-left:16px;font-size:13px;color:#555">
+        <li><strong>翻开</strong>：点格子 → 揭开/排雷</li>
+        <li><strong>插旗</strong>：点格子 → 放置/取消旗帜</li>
+        <li><strong>位置</strong>：点格子 → 移动高亮光标，不触发任何操作（方便精确定位再切模式操作）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>翻开+插旗+问号（Windows 三态）</h3>
+      <p>复刻 Windows 右键三状态循环：</p>
+      <ul style="margin-top:8px;padding-left:16px;font-size:13px;color:#555">
+        <li><strong>翻开</strong>：点格子 → 揭开（左键效果）</li>
+        <li><strong>插旗</strong>：点格子 → 插旗标记（右键一次）</li>
+        <li><strong>位置</strong>：点格子 → 打问号"？"（右键两次，表示不确定）</li>
+      </ul>
+      <div style="background:#f5f5f5;border-radius:8px;padding:8px;margin-top:8px;font-size:11px;color:#888;text-align:center">
+        □ → 🚩 → ❓ → □（循环）
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>两模式 + 确认操作</h3>
+      <ul style="margin-top:8px;padding-left:16px;font-size:13px;color:#555">
+        <li><strong>翻开</strong>：激活后点格子 = 揭开</li>
+        <li><strong>插旗</strong>：激活后点格子 = 插旗</li>
+        <li><strong>位置</strong>：显示当前格坐标信息（行列数），帮助用户在手机小格子上精准定位</li>
+      </ul>
+      <div style="background:#f5f5f5;border-radius:8px;padding:8px;margin-top:8px;font-size:11px;color:#555;text-align:center">
+        底部显示：第 3 行 第 5 列 | 周围 2 个雷
+      </div>
+    </div>
+  </div>
+</div>

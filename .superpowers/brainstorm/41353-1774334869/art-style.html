@@ -1,0 +1,94 @@
+<h2>选择视觉风格</h2>
+<p class="subtitle">给蹲厕所用的游戏平台——哪种风格最对味？</p>
+
+<div class="cards">
+  <div class="card" data-choice="pixel" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:monospace">
+      <!-- Pixel art retro style -->
+      <div style="color:#00ff88;font-size:11px;letter-spacing:2px;text-shadow:0 0 8px #00ff88">▓▓ 小游戏合集 ▓▓</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;width:180px">
+        <div style="background:#16213e;border:2px solid #00ff88;padding:8px;text-align:center;border-radius:2px">
+          <div style="font-size:20px">💣</div>
+          <div style="color:#00ff88;font-size:9px;margin-top:4px">扫 雷</div>
+        </div>
+        <div style="background:#16213e;border:2px solid #e94560;padding:8px;text-align:center;border-radius:2px">
+          <div style="font-size:20px">🕷️</div>
+          <div style="color:#e94560;font-size:9px;margin-top:4px">纸 牌</div>
+        </div>
+        <div style="background:#16213e;border:2px solid #f5a623;padding:8px;text-align:center;border-radius:2px">
+          <div style="font-size:20px">🀄</div>
+          <div style="color:#f5a623;font-size:9px;margin-top:4px">连连看</div>
+        </div>
+        <div style="background:#16213e;border:2px dotted #555;padding:8px;text-align:center;border-radius:2px;opacity:0.4">
+          <div style="font-size:20px">➕</div>
+          <div style="color:#555;font-size:9px;margin-top:4px">更 多</div>
+        </div>
+      </div>
+      <div style="color:#555;font-size:8px;letter-spacing:1px">PIXEL RETRO STYLE</div>
+    </div>
+    <div class="card-body">
+      <h3>像素复古风</h3>
+      <p>深色背景、霓虹描边、像素字体。复古街机感，护眼适合厕所昏暗灯光，也有点赛博朋克味道。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="clean" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:-apple-system,sans-serif">
+      <!-- Clean iOS-like style -->
+      <div style="color:#1c1c1e;font-size:13px;font-weight:700;letter-spacing:-0.3px">小游戏</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:180px">
+        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+          <div style="font-size:24px">💣</div>
+          <div style="color:#1c1c1e;font-size:10px;font-weight:500;margin-top:4px">扫雷</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+          <div style="font-size:24px">🕷️</div>
+          <div style="color:#1c1c1e;font-size:10px;font-weight:500;margin-top:4px">蜘蛛纸牌</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+          <div style="font-size:24px">🀄</div>
+          <div style="color:#1c1c1e;font-size:10px;font-weight:500;margin-top:4px">连连看</div>
+        </div>
+        <div style="background:#f0f0f5;border-radius:12px;padding:12px;text-align:center;border:1.5px dashed #c7c7cc">
+          <div style="font-size:24px">➕</div>
+          <div style="color:#8e8e93;font-size:10px;margin-top:4px">更多</div>
+        </div>
+      </div>
+      <div style="color:#8e8e93;font-size:8px;letter-spacing:0.5px">CLEAN MINIMAL STYLE</div>
+    </div>
+    <div class="card-body">
+      <h3>简洁 iOS 风</h3>
+      <p>白底卡片、圆角、系统字体。接近 iPhone 原生 App 质感，上手无学习成本，用来蹲坑最不累眼睛。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="colorful" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:-apple-system,sans-serif">
+      <!-- Colorful game style -->
+      <div style="color:white;font-size:13px;font-weight:800;letter-spacing:0.5px;text-shadow:0 2px 4px rgba(0,0,0,0.3)">🎮 游戏合集</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:180px">
+        <div style="background:linear-gradient(135deg,#f093fb,#f5576c);border-radius:14px;padding:12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.2)">
+          <div style="font-size:26px">💣</div>
+          <div style="color:white;font-size:10px;font-weight:600;margin-top:4px">扫雷</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#4facfe,#00f2fe);border-radius:14px;padding:12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.2)">
+          <div style="font-size:26px">🕷️</div>
+          <div style="color:white;font-size:10px;font-weight:600;margin-top:4px">蜘蛛纸牌</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#43e97b,#38f9d7);border-radius:14px;padding:12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.2)">
+          <div style="font-size:26px">🀄</div>
+          <div style="color:white;font-size:10px;font-weight:600;margin-top:4px">连连看</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.2);border-radius:14px;padding:12px;text-align:center;border:1.5px dashed rgba(255,255,255,0.5)">
+          <div style="font-size:26px">➕</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:10px;margin-top:4px">更多</div>
+        </div>
+      </div>
+      <div style="color:rgba(255,255,255,0.6);font-size:8px;letter-spacing:1px">COLORFUL GAME STYLE</div>
+    </div>
+    <div class="card-body">
+      <h3>彩色游戏风</h3>
+      <p>渐变色卡片、活泼配色，每个游戏用不同主色。视觉冲击力强，有大厂手游感，更有游戏氛围。</p>
+    </div>
+  </div>
+</div>

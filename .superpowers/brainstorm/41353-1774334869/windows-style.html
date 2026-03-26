@@ -1,0 +1,97 @@
+<h2>想复刻哪个时代的 Windows 扫雷风格？</h2>
+<p class="subtitle">三种经典风格，选一个最接近你心目中的效果</p>
+
+<div class="cards">
+  <div class="card" data-choice="xp" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#d4d0c8;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <!-- Windows XP / 98 style -->
+      <div style="background:#d4d0c8;border:2px solid;border-color:#ffffff #808080 #808080 #ffffff;padding:4px 8px;font-family:Tahoma,Arial;font-size:12px;width:200px">
+        <div style="background:#000082;color:white;padding:2px 4px;font-size:11px;display:flex;justify-content:space-between;margin-bottom:4px">
+          <span>扫雷</span><span>× □ −</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#d4d0c8;border:2px inset #808080;padding:4px;margin-bottom:4px">
+          <div style="background:#000;color:red;font-family:monospace;font-size:18px;padding:2px 6px;border:2px inset #808080">010</div>
+          <div style="width:28px;height:28px;background:#d4d0c8;border:2px solid;border-color:#ffffff #808080 #808080 #ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">🙂</div>
+          <div style="background:#000;color:red;font-family:monospace;font-size:18px;padding:2px 6px;border:2px inset #808080">000</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(9,20px);gap:0;border:2px inset #808080">
+          <div style="width:20px;height:20px;background:#d4d0c8;border:1px solid;border-color:#ffffff #808080 #808080 #ffffff;box-sizing:border-box"></div>
+          <div style="width:20px;height:20px;background:#d4d0c8;border:1px solid;border-color:#ffffff #808080 #808080 #ffffff;box-sizing:border-box"></div>
+          <div style="width:20px;height:20px;background:#c0c0c0;border:1px solid #808080;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;color:#0000ff;font-weight:bold">1</div>
+          <div style="width:20px;height:20px;background:#c0c0c0;border:1px solid #808080;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007b00;font-weight:bold">2</div>
+          <div style="width:20px;height:20px;background:#d4d0c8;border:1px solid;border-color:#ffffff #808080 #808080 #ffffff;box-sizing:border-box"></div>
+          <div style="width:20px;height:20px;background:#c0c0c0;border:1px solid #808080;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:10px">🚩</div>
+          <div style="width:20px;height:20px;background:#d4d0c8;border:1px solid;border-color:#ffffff #808080 #808080 #ffffff;box-sizing:border-box"></div>
+          <div style="width:20px;height:20px;background:#d4d0c8;border:1px solid;border-color:#ffffff #808080 #808080 #ffffff;box-sizing:border-box"></div>
+          <div style="width:20px;height:20px;background:#d4d0c8;border:1px solid;border-color:#ffffff #808080 #808080 #ffffff;box-sizing:border-box"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Windows 98 / XP 经典</h3>
+      <p>灰色 3D 凹凸按钮、像素风格数字地雷计数器、经典 :) 笑脸按钮。最原汁原味的扫雷体验。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="win7" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1e3a5f;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <!-- Windows 7 style -->
+      <div style="background:rgba(200,220,255,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.6);border-radius:6px;padding:4px 8px;font-family:Segoe UI,Arial;font-size:12px;width:200px;box-shadow:0 4px 16px rgba(0,0,0,0.4)">
+        <div style="background:linear-gradient(to bottom,#4a90d9,#2a6ab0);color:white;padding:3px 8px;font-size:11px;display:flex;justify-content:space-between;border-radius:4px 4px 0 0;margin:-4px -8px 4px -8px">
+          <span>扫雷</span><span style="font-size:10px">− □ ×</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.3);border-radius:4px;padding:4px;margin-bottom:4px">
+          <div style="background:#000;color:#ff4444;font-family:monospace;font-size:18px;padding:2px 6px;border-radius:3px">010</div>
+          <div style="width:28px;height:28px;background:linear-gradient(135deg,#ffe,#ffd);border:1px solid #aaa;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px">🙂</div>
+          <div style="background:#000;color:#ff4444;font-family:monospace;font-size:18px;padding:2px 6px;border-radius:3px">000</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(9,20px);gap:1px;background:#3a7ab0;padding:1px;border-radius:3px">
+          <div style="width:20px;height:20px;background:linear-gradient(135deg,#e8f4ff,#c5dff8);border-radius:2px"></div>
+          <div style="width:20px;height:20px;background:linear-gradient(135deg,#e8f4ff,#c5dff8);border-radius:2px"></div>
+          <div style="width:20px;height:20px;background:#dce8f5;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#0000cc;font-weight:bold">1</div>
+          <div style="width:20px;height:20px;background:#dce8f5;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007b00;font-weight:bold">2</div>
+          <div style="width:20px;height:20px;background:linear-gradient(135deg,#e8f4ff,#c5dff8);border-radius:2px"></div>
+          <div style="width:20px;height:20px;background:#dce8f5;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px">🚩</div>
+          <div style="width:20px;height:20px;background:linear-gradient(135deg,#e8f4ff,#c5dff8);border-radius:2px"></div>
+          <div style="width:20px;height:20px;background:linear-gradient(135deg,#e8f4ff,#c5dff8);border-radius:2px"></div>
+          <div style="width:20px;height:20px;background:linear-gradient(135deg,#e8f4ff,#c5dff8);border-radius:2px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Windows 7 Aero 玻璃</h3>
+      <p>磨砂玻璃效果、蓝色渐变主题、圆角边框。更现代精致，但仍保留经典扫雷布局。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="modern" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f3f3f3;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <!-- Windows 10/11 modern style -->
+      <div style="background:#ffffff;border:1px solid #e0e0e0;border-radius:8px;padding:4px 8px;font-family:Segoe UI,Arial;font-size:12px;width:200px;box-shadow:0 2px 8px rgba(0,0,0,0.12)">
+        <div style="background:#005fb7;color:white;padding:4px 8px;font-size:11px;display:flex;justify-content:space-between;border-radius:6px 6px 0 0;margin:-4px -8px 6px -8px">
+          <span>扫雷</span><span style="font-size:10px">− □ ×</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#f5f5f5;border-radius:6px;padding:6px;margin-bottom:6px">
+          <div style="background:#1c1c1c;color:#ff6b35;font-family:monospace;font-size:18px;padding:3px 8px;border-radius:4px">010</div>
+          <div style="width:30px;height:30px;background:#0078d4;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px">🙂</div>
+          <div style="background:#1c1c1c;color:#ff6b35;font-family:monospace;font-size:18px;padding:3px 8px;border-radius:4px">000</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(9,20px);gap:2px">
+          <div style="width:20px;height:20px;background:#e8e8e8;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#e8e8e8;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#0078d4;font-weight:bold">1</div>
+          <div style="width:20px;height:20px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#107c10;font-weight:bold">2</div>
+          <div style="width:20px;height:20px;background:#e8e8e8;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px">🚩</div>
+          <div style="width:20px;height:20px;background:#e8e8e8;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#e8e8e8;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#e8e8e8;border-radius:3px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Windows 10/11 现代</h3>
+      <p>扁平化设计、蓝色强调色、Fluent Design 风格。简洁现代，适合 iPhone 的高分辨率屏幕。</p>
+    </div>
+  </div>
+</div>

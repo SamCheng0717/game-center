@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>骚雷 - 手机扫雷游戏 | 离线可玩 PWA</title>
+  <meta name="description" content="在手机上玩经典扫雷，支持离线，可添加到主屏幕，六套主题随心切换">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="小游戏">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta property="og:title" content="骚雷 - 手机扫雷游戏">
+  <meta property="og:description" content="在手机上玩经典扫雷，支持离线，六套主题">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/icons/icon-512.png">
+  <link rel="canonical" href="/">
+</head>
+<body>
+  <p>骨架搭建中...</p>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('SW registered'))
+        .catch(e => console.error('SW failed:', e));
+    }
+  </script>
+</body>
+</html>
