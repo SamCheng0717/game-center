@@ -54,7 +54,7 @@
     <div class="toolbar">
       <button class="toolbar-btn active" data-mode="reveal" id="btn-reveal">翻开</button>
       <button class="toolbar-btn" data-mode="flag"   id="btn-flag">插旗</button>
-      <button class="toolbar-btn" data-mode="position" id="btn-pos">位置</button>
+      <button class="toolbar-btn" data-mode="question" id="btn-pos">未知</button>
     </div>
 
   </div>
@@ -191,12 +191,12 @@
       } else if (cell.flagged) {
         el.classList.add('flagged');
         el.textContent = '';
+      } else if (cell.questioned) {
+        el.classList.add('questioned');
+        el.textContent = '';
       } else {
         el.textContent = '';
       }
-      // 位置光标
-      const cellIdx = parseInt(el.dataset.idx);
-      if (cellIdx === game.cursor) el.classList.add('cursor');
     }
 
     function refreshAllCells() {
@@ -242,11 +242,8 @@
         game.reveal(idx);
       } else if (game.mode === MODES.FLAG) {
         game.toggleFlag(idx);
-      } else if (game.mode === MODES.POSITION) {
-        game.setCursor(idx);
-        refreshAllCells();
-        updateInfoBar();
-        return; // 位置模式不保存进度也不检查胜负
+      } else if (game.mode === MODES.QUESTION) {
+        game.toggleQuestion(idx);
       }
 
       // 首次点击后启动 UI 计时器
@@ -376,6 +373,8 @@
       }
 
       wrapper.addEventListener('touchstart', e => {
+        // 结果覆盖层内的按钮直接放行，让 click 事件正常触发
+        if (e.target.closest('.result-overlay')) return;
         e.preventDefault();
         const touch = e.touches[0];
         touchStartX = touch.clientX;
@@ -384,8 +383,7 @@
         lastCellIdx = getCellIdxFromPoint(touch.clientX, touch.clientY);
 
         // 恢复暂停的计时器（从存档加载后首次有效触摸）
-        // 位置模式不启动计时器，避免用户仅定位光标就意外开始计时
-        if (game.state === STATES.PLAYING && !timerInterval && game.mode !== MODES.POSITION) {
+        if (game.state === STATES.PLAYING && !timerInterval) {
           game.resumeTimer();
           startUITimer();
         }
@@ -396,6 +394,7 @@
       }, { passive: false });
 
       wrapper.addEventListener('touchmove', e => {
+        if (e.target.closest('.result-overlay')) return;
         e.preventDefault();
         const touch = e.touches[0];
         const dx = touch.clientX - touchStartX;
@@ -406,10 +405,6 @@
         const cellIdx = getCellIdxFromPoint(touch.clientX, touch.clientY);
         if (cellIdx >= 0 && cellIdx !== lastCellIdx) {
           lastCellIdx = cellIdx;
-          if (game.mode === MODES.POSITION) {
-            game.setCursor(cellIdx);
-            refreshAllCells();
-          }
         }
         if (useMagnifier() && lastCellIdx >= 0) {
           showMagnifier(touch.clientX, touch.clientY, lastCellIdx);
@@ -417,6 +412,7 @@
       }, { passive: false });
 
       wrapper.addEventListener('touchend', e => {
+        if (e.target.closest('.result-overlay')) return;
         e.preventDefault();
         magnifier.classList.remove('visible');
         if (!isDragging && lastCellIdx >= 0) {

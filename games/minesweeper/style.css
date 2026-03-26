@@ -57,6 +57,12 @@
   font-size: calc(var(--cell-size) * 0.5);
 }
 
+/* 未知（问号标记）*/
+.cell.questioned::after {
+  content: '❓';
+  font-size: calc(var(--cell-size) * 0.5);
+}
+
 /* 数字颜色 */
 .cell[data-num="1"] { color: var(--num-1); }
 .cell[data-num="2"] { color: var(--num-2); }

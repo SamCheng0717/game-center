@@ -1,6 +1,6 @@
 // games/minesweeper/game.js
 
-export const MODES = Object.freeze({ REVEAL: 'reveal', FLAG: 'flag', POSITION: 'position' });
+export const MODES = Object.freeze({ REVEAL: 'reveal', FLAG: 'flag', QUESTION: 'question' });
 export const STATES = Object.freeze({ IDLE: 'idle', PLAYING: 'playing', WON: 'won', LOST: 'lost' });
 
 export class MinesweeperGame {
@@ -16,7 +16,7 @@ export class MinesweeperGame {
     this._firstClick = true;
     this._minesReady = false;
     this.cells = Array.from({ length: rows * cols }, () => ({
-      mine: false, revealed: false, flagged: false, neighborCount: 0
+      mine: false, revealed: false, flagged: false, questioned: false, neighborCount: 0
     }));
   }
 
@@ -47,14 +47,80 @@ export class MinesweeperGame {
     for (let i = 0; i < this.cells.length; i++) {
       if (!safeSet.has(i)) candidates.push(i);
     }
-    // Fisher-Yates shuffle 取前 mineCount 个
-    for (let i = candidates.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+
+    // Generate-and-Test：最多尝试 MAX_ATTEMPTS 次，找到"纯逻辑可解"的布局
+    const MAX_ATTEMPTS = 100;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      // Fisher-Yates shuffle
+      for (let i = candidates.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+      }
+      // 重置并放置地雷
+      this.cells.forEach(c => { c.mine = false; });
+      candidates.slice(0, this.mineCount).forEach(i => { this.cells[i].mine = true; });
+      this._calcNeighbors();
+      // 最后一次不管可解与否都直接用
+      if (attempt === MAX_ATTEMPTS - 1 || this._isSolvable(safeIdx)) break;
     }
-    candidates.slice(0, this.mineCount).forEach(i => { this.cells[i].mine = true; });
-    this._calcNeighbors();
+
     this._minesReady = true;
+  }
+
+  /**
+   * 约束传播求解器：从 firstIdx 开始模拟推理，判断棋盘是否无需猜测即可解完。
+   * 算法：BFS 展开空格 → 反复应用两条约束规则直到无新推断：
+   *   1. 剩余雷数 == 0 → 所有未知邻格安全
+   *   2. 剩余雷数 == 未知邻格数 → 所有未知邻格是雷
+   */
+  _isSolvable(firstIdx) {
+    const N = this.cells.length;
+    // 0 = 未知, 1 = 已知安全, 2 = 已知是雷
+    const st = new Uint8Array(N);
+    for (let i = 0; i < N; i++) if (this.cells[i].mine) st[i] = 2;
+
+    // 迭代 BFS 揭开安全格（模拟空格自动展开）
+    const revealBFS = (start) => {
+      if (st[start] !== 0) return;
+      const q = [start];
+      st[start] = 1;
+      let h = 0;
+      while (h < q.length) {
+        const cur = q[h++];
+        if (this.cells[cur].neighborCount === 0) {
+          for (const j of this.getNeighborIndices(cur)) {
+            if (st[j] === 0) { st[j] = 1; q.push(j); }
+          }
+        }
+      }
+    };
+
+    revealBFS(firstIdx);
+
+    // 约束传播：反复扫描直到无新推断
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (let i = 0; i < N; i++) {
+        if (st[i] !== 1) continue;
+        const nb = this.getNeighborIndices(i);
+        let unknown = 0, mines = 0;
+        for (const j of nb) {
+          if (st[j] === 0) unknown++;
+          else if (st[j] === 2) mines++;
+        }
+        if (unknown === 0) continue;
+        const rem = this.cells[i].neighborCount - mines;
+        if (rem === 0) {
+          for (const j of nb) if (st[j] === 0) { revealBFS(j); changed = true; }
+        } else if (rem === unknown) {
+          for (const j of nb) if (st[j] === 0) { st[j] = 2; changed = true; }
+        }
+      }
+    }
+
+    for (let i = 0; i < N; i++) if (st[i] === 0) return false;
+    return true;
   }
 
   /** 测试专用：手动指定地雷位置
@@ -105,6 +171,7 @@ export class MinesweeperGame {
   _revealOne(i) {
     if (this.cells[i].revealed || this.cells[i].flagged) return;
     this.cells[i].revealed = true;
+    this.cells[i].questioned = false;
 
     if (this.cells[i].mine) {
       this.state = STATES.LOST;
@@ -152,7 +219,15 @@ export class MinesweeperGame {
   toggleFlag(i) {
     if (this.state !== STATES.PLAYING) return;
     if (this.cells[i].revealed) return;
+    if (!this.cells[i].flagged && this.remainingMines <= 0) return; // 旗帜数量上限
     this.cells[i].flagged = !this.cells[i].flagged;
+    if (this.cells[i].flagged) this.cells[i].questioned = false;
+  }
+
+  toggleQuestion(i) {
+    if (this.state !== STATES.PLAYING) return;
+    if (this.cells[i].revealed || this.cells[i].flagged) return;
+    this.cells[i].questioned = !this.cells[i].questioned;
   }
 
   setMode(mode) { this.mode = mode; }
@@ -198,7 +273,7 @@ export class MinesweeperGame {
   reset() {
     this._stopTimer();
     this.cells = Array.from({ length: this.rows * this.cols }, () => ({
-      mine: false, revealed: false, flagged: false, neighborCount: 0
+      mine: false, revealed: false, flagged: false, questioned: false, neighborCount: 0
     }));
     this.state = STATES.IDLE; this.mode = MODES.REVEAL;
     this.cursor = -1; this.elapsed = 0;
