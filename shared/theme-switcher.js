@@ -12,6 +12,18 @@ const THEMES = [
 
 const STORAGE_KEY = 'sao-lei-theme';
 
+/** 安全获取 localStorage 项 */
+function safeGetItem(key, fallback = null) {
+  try { return localStorage.getItem(key) ?? fallback; }
+  catch { return fallback; }
+}
+
+/** 安全设置 localStorage 项 */
+function safeSetItem(key, value) {
+  try { localStorage.setItem(key, value); }
+  catch { /* 静默失败：存储禁用时主题已在内存中应用 */ }
+}
+
 /** 应用主题到 <html> 元素 */
 function applyTheme(themeId) {
   document.documentElement.setAttribute('data-theme', themeId);
@@ -19,7 +31,7 @@ function applyTheme(themeId) {
 
 /** 从 localStorage 读取并应用保存的主题 */
 function loadTheme() {
-  const saved = localStorage.getItem(STORAGE_KEY) || 'dark-minimal';
+  const saved = safeGetItem(STORAGE_KEY) || 'dark-minimal';
   applyTheme(saved);
   return saved;
 }
@@ -27,7 +39,7 @@ function loadTheme() {
 /** 切换主题并保存 */
 function setTheme(themeId) {
   applyTheme(themeId);
-  localStorage.setItem(STORAGE_KEY, themeId);
+  safeSetItem(STORAGE_KEY, themeId);
   updateThemeUI(themeId);
 }
 
@@ -52,8 +64,11 @@ function initThemeSwitcher(toggleBtnSelector, overlaySelector, drawerSelector, g
 
   if (!toggleBtn || !overlay || !drawer || !grid) return;
 
+  if (grid._themeInitialized) return;
+  grid._themeInitialized = true;
+
   // 渲染主题选项
-  const current = localStorage.getItem(STORAGE_KEY) || 'dark-minimal';
+  const current = safeGetItem(STORAGE_KEY) || 'dark-minimal';
   grid.innerHTML = THEMES.map(t => `
     <div class="theme-item${t.id === current ? ' selected' : ''}" data-theme="${t.id}">
       <div class="theme-preview" style="background:${t.bg}">${t.preview}</div>
@@ -99,7 +114,9 @@ function showPWABanner() {
   }
 }
 
-// 自动加载主题
-loadTheme();
+// 自动加载主题（仅浏览器环境）
+if (typeof document !== 'undefined') {
+  loadTheme();
+}
 
 export { THEMES, loadTheme, setTheme, initThemeSwitcher, showPWABanner };
