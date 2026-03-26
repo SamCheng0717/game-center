@@ -1,0 +1,161 @@
+/* games/minesweeper/style.css */
+
+/* ===== 雷区容器 ===== */
+.mine-grid-wrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  /* 完全接管触摸事件，阻止页面滚动 */
+  touch-action: none;
+  position: relative;
+}
+
+.mine-grid {
+  display: grid;
+  /* grid-template-columns 由 JS 动态设置 */
+  gap: 0;
+  border: 1px solid var(--cell-unrevealed-border-dark);
+}
+
+/* ===== 格子基础样式 ===== */
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--cell-size) * 0.55);
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  border: 1px solid;
+  border-color: var(--cell-unrevealed-border-light) var(--cell-unrevealed-border-dark) var(--cell-unrevealed-border-dark) var(--cell-unrevealed-border-light);
+  background: var(--cell-unrevealed);
+  box-sizing: border-box;
+  position: relative;
+  transition: background 0.08s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 已揭开的格子 */
+.cell.revealed {
+  background: var(--cell-revealed);
+  border-color: var(--cell-revealed-border);
+}
+
+/* 地雷格 */
+.cell.mine-cell {
+  background: var(--cell-mine);
+}
+
+/* 旗帜 */
+.cell.flagged::after {
+  content: '🚩';
+  font-size: calc(var(--cell-size) * 0.5);
+}
+
+/* 数字颜色 */
+.cell[data-num="1"] { color: var(--num-1); }
+.cell[data-num="2"] { color: var(--num-2); }
+.cell[data-num="3"] { color: var(--num-3); }
+.cell[data-num="4"] { color: var(--num-4); }
+.cell[data-num="5"] { color: var(--num-5); }
+.cell[data-num="6"] { color: var(--num-6); }
+.cell[data-num="7"] { color: var(--num-7); }
+.cell[data-num="8"] { color: var(--num-8); }
+
+/* 位置模式光标 */
+.cell.cursor {
+  outline: 2px solid var(--cursor-color);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* ===== 放大镜气泡 ===== */
+.magnifier {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--magnifier-border);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 20;
+  display: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  background: var(--bg-secondary);
+}
+.magnifier.visible { display: block; }
+
+/* 放大镜内容（小格子放大后的视图）*/
+.magnifier-content {
+  position: absolute;
+  display: grid;
+  /* grid-template-columns 由 JS 动态设置为 5 列 */
+  transform-origin: center center;
+}
+
+/* 放大镜中心十字准星 */
+.magnifier::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px; height: 12px;
+  border: 1.5px solid var(--cursor-color);
+  border-radius: 50%;
+  z-index: 21;
+  pointer-events: none;
+}
+
+/* ===== 难度选择器 ===== */
+.difficulty-bar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 16px;
+  background: var(--info-bar-bg);
+  border-bottom: 1px solid var(--toolbar-border);
+  flex-shrink: 0;
+}
+
+.diff-btn {
+  flex: 1;
+  padding: 4px 0;
+  border: 1px solid var(--toolbar-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.diff-btn.active {
+  background: var(--btn-active-bg);
+  color: var(--btn-active-color);
+  border-color: var(--btn-active-color);
+}
+
+/* ===== 胜负覆盖层 ===== */
+.result-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+  flex-direction: column;
+  gap: 12px;
+}
+.result-overlay.show { display: flex; }
+.result-overlay h2 { color: #fff; margin: 0; font-size: 1.5rem; }
+.result-overlay button {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
