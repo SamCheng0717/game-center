@@ -1,0 +1,172 @@
+/* shared/themes.css
+   每套主题定义完整的 CSS 变量集。
+   切换方式：<html data-theme="xxx"> */
+
+/* ===== 暗黑极简（默认）===== */
+:root,
+[data-theme="dark-minimal"] {
+  --bg-primary: #0d0d0d;
+  --bg-secondary: #1a1a1a;
+  --cell-unrevealed: #1e1e1e;
+  --cell-unrevealed-border-light: #333;
+  --cell-unrevealed-border-dark: #000;
+  --cell-revealed: #111;
+  --cell-revealed-border: #222;
+  --cell-mine: #3a0000;
+  --accent: #f0f0f0;
+  --accent-dim: #888;
+  --text-primary: #f0f0f0;
+  --text-muted: #555;
+  --toolbar-bg: #111;
+  --toolbar-border: #2a2a2a;
+  --btn-active-bg: #2a2a2a;
+  --btn-active-color: #f0f0f0;
+  --info-bar-bg: #0a0a0a;
+  --counter-bg: #000;
+  --counter-color: #ff4444;
+  --magnifier-border: rgba(255,255,255,0.3);
+  --cursor-color: #ff8c00;
+  --num-1: #4fc3f7; --num-2: #81c784; --num-3: #e57373;
+  --num-4: #7986cb; --num-5: #ff8a65; --num-6: #4dd0e1;
+  --num-7: #f0f0f0; --num-8: #888;
+}
+
+/* ===== 卡通手绘 ===== */
+[data-theme="cartoon"] {
+  --bg-primary: #fffbf0;
+  --bg-secondary: #fff8e0;
+  --cell-unrevealed: #fff;
+  --cell-unrevealed-border-light: #333;
+  --cell-unrevealed-border-dark: #333;
+  --cell-revealed: #f0ece0;
+  --cell-revealed-border: #ccc;
+  --cell-mine: #ffe0e0;
+  --accent: #333;
+  --accent-dim: #666;
+  --text-primary: #333;
+  --text-muted: #999;
+  --toolbar-bg: #fff8e0;
+  --toolbar-border: #333;
+  --btn-active-bg: #333;
+  --btn-active-color: #fff;
+  --info-bar-bg: #fff8e0;
+  --counter-bg: #1a1a1a;
+  --counter-color: #ff6b6b;
+  --magnifier-border: #333;
+  --cursor-color: #ff6b00;
+  --num-1: #1565c0; --num-2: #2e7d32; --num-3: #c62828;
+  --num-4: #283593; --num-5: #bf360c; --num-6: #00695c;
+  --num-7: #212121; --num-8: #616161;
+}
+
+/* ===== 纸张质感 ===== */
+[data-theme="paper"] {
+  --bg-primary: #e8e0d5;
+  --bg-secondary: #f5ede0;
+  --cell-unrevealed: #f5ede0;
+  --cell-unrevealed-border-light: #d4b896;
+  --cell-unrevealed-border-dark: #a08060;
+  --cell-revealed: #ddd5c5;
+  --cell-revealed-border: #c4a882;
+  --cell-mine: #f0d0c0;
+  --accent: #5c4a3a;
+  --accent-dim: #8b7355;
+  --text-primary: #5c4a3a;
+  --text-muted: #a08060;
+  --toolbar-bg: #ddd5c5;
+  --toolbar-border: #c4a882;
+  --btn-active-bg: #5c4a3a;
+  --btn-active-color: #f5ede0;
+  --info-bar-bg: #d4c9b8;
+  --counter-bg: #2a1a0a;
+  --counter-color: #cc6644;
+  --magnifier-border: rgba(92,74,58,0.4);
+  --cursor-color: #cc4400;
+  --num-1: #1a5276; --num-2: #1e8449; --num-3: #922b21;
+  --num-4: #154360; --num-5: #7b241c; --num-6: #117864;
+  --num-7: #212121; --num-8: #7f8c8d;
+}
+
+/* ===== 霓虹赛博 ===== */
+[data-theme="neon"] {
+  --bg-primary: #050510;
+  --bg-secondary: #0a0a20;
+  --cell-unrevealed: #0d0d2b;
+  --cell-unrevealed-border-light: #00ffff44;
+  --cell-unrevealed-border-dark: #00000088;
+  --cell-revealed: #060620;
+  --cell-revealed-border: #00ffff22;
+  --cell-mine: #2b000d;
+  --accent: #00ffff;
+  --accent-dim: #00888888;
+  --text-primary: #00ffff;
+  --text-muted: #006666;
+  --toolbar-bg: #080820;
+  --toolbar-border: #ff00ff44;
+  --btn-active-bg: #ff00ff22;
+  --btn-active-color: #ff00ff;
+  --info-bar-bg: #040418;
+  --counter-bg: #000;
+  --counter-color: #ff00ff;
+  --magnifier-border: rgba(0,255,255,0.5);
+  --cursor-color: #ffff00;
+  --num-1: #00bfff; --num-2: #00ff88; --num-3: #ff4466;
+  --num-4: #aa44ff; --num-5: #ff8800; --num-6: #00ffee;
+  --num-7: #ffffff; --num-8: #8888aa;
+}
+
+/* ===== 国风水墨 ===== */
+[data-theme="chinese"] {
+  --bg-primary: #f9f5ef;
+  --bg-secondary: #f0e8dc;
+  --cell-unrevealed: #f5f0e8;
+  --cell-unrevealed-border-light: #d4b896;
+  --cell-unrevealed-border-dark: #c4a882;
+  --cell-revealed: #e8e0d0;
+  --cell-revealed-border: #c9a87c;
+  --cell-mine: #ffe8e0;
+  --accent: #8b3a3a;
+  --accent-dim: #c4a882;
+  --text-primary: #3a2a1a;
+  --text-muted: #c9a87c;
+  --toolbar-bg: #ede4d4;
+  --toolbar-border: #c9a87c;
+  --btn-active-bg: #8b3a3a;
+  --btn-active-color: #f9f5ef;
+  --info-bar-bg: #e8e0d0;
+  --counter-bg: #1a0a0a;
+  --counter-color: #cc3333;
+  --magnifier-border: rgba(139,58,58,0.4);
+  --cursor-color: #cc3333;
+  --num-1: #1a4a8b; --num-2: #1a6e3a; --num-3: #8b1a1a;
+  --num-4: #0a2a6e; --num-5: #6e1a0a; --num-6: #0a6e6e;
+  --num-7: #1a0a0a; --num-8: #6e6458;
+}
+
+/* ===== 果冻糖豆 ===== */
+[data-theme="candy"] {
+  --bg-primary: #ffecd2;
+  --bg-secondary: #ffd8b0;
+  --cell-unrevealed: #ffffff;
+  --cell-unrevealed-border-light: #fff;
+  --cell-unrevealed-border-dark: #e88a6a;
+  --cell-revealed: #ffeedd;
+  --cell-revealed-border: #f0c0a0;
+  --cell-mine: #ffe0f0;
+  --accent: #e88a6a;
+  --accent-dim: #f0b090;
+  --text-primary: #5a3020;
+  --text-muted: #c08060;
+  --toolbar-bg: #ffd8b0;
+  --toolbar-border: #e88a6a;
+  --btn-active-bg: #e88a6a;
+  --btn-active-color: #fff;
+  --info-bar-bg: #ffc890;
+  --counter-bg: #3a1808;
+  --counter-color: #ff6644;
+  --magnifier-border: rgba(232,138,106,0.5);
+  --cursor-color: #ff4400;
+  --num-1: #2196f3; --num-2: #4caf50; --num-3: #f44336;
+  --num-4: #3f51b5; --num-5: #ff5722; --num-6: #009688;
+  --num-7: #212121; --num-8: #9e9e9e;
+}

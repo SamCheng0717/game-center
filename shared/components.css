@@ -1,0 +1,177 @@
+/* shared/components.css
+   提供底部工具栏、信息栏、主题选择器等通用组件 */
+
+/* ===== 游戏容器布局 ===== */
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+/* ===== 顶部信息栏（剩余雷数、笑脸、计时）===== */
+.info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--info-bar-bg);
+  border-bottom: 1px solid var(--toolbar-border);
+  flex-shrink: 0;
+  height: 52px;
+}
+
+.info-counter {
+  background: var(--counter-bg);
+  color: var(--counter-color);
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.info-reset-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  border-radius: 8px;
+  transition: transform 0.1s;
+}
+.info-reset-btn:active { transform: scale(0.9); }
+
+/* ===== 底部工具栏（三模式按钮）===== */
+.toolbar {
+  display: flex;
+  background: var(--toolbar-bg);
+  border-top: 1px solid var(--toolbar-border);
+  padding: 8px 16px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.toolbar-btn {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--toolbar-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.toolbar-btn.active {
+  background: var(--btn-active-bg);
+  color: var(--btn-active-color);
+  border-color: var(--btn-active-color);
+}
+
+/* ===== 主题选择器抽屉 ===== */
+.theme-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  align-items: flex-end;
+}
+.theme-overlay.open { display: flex; }
+
+.theme-drawer {
+  width: 100%;
+  max-height: 40vh;
+  background: var(--bg-secondary);
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  /* 独立触摸监听，不影响雷区 */
+}
+
+.theme-drawer h3 {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.theme-item {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.theme-item:active { transform: scale(0.95); }
+.theme-item.selected { border-color: var(--accent); }
+
+.theme-preview {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.theme-item span {
+  display: block;
+  text-align: center;
+  font-size: 0.72rem;
+  padding: 4px;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+/* ===== 调色板按钮（右上角）===== */
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+/* ===== PWA 安装提示横幅 ===== */
+.pwa-banner {
+  display: none;
+  position: fixed;
+  bottom: calc(64px + env(safe-area-inset-bottom));
+  left: 16px;
+  right: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--toolbar-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  z-index: 50;
+  align-items: center;
+  gap: 10px;
+}
+.pwa-banner.show { display: flex; }
+.pwa-banner button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1rem;
+  padding: 0 4px;
+}
