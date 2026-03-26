@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>扫雷逻辑测试</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #111; color: #eee; }
+    .pass { color: #81c784; } .fail { color: #e57373; }
+    h2 { color: #4fc3f7; }
+    pre { background: #1e1e1e; padding: 8px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>扫雷逻辑测试</h2>
+  <div id="results"></div>
+  <script type="module">
+    import { MinesweeperGame, MODES } from '/games/minesweeper/game.js';
+
+    const results = [];
+    function test(name, fn) {
+      try {
+        fn();
+        results.push({ name, pass: true });
+      } catch(e) {
+        results.push({ name, pass: false, error: e.message });
+      }
+    }
+    function assert(condition, msg) {
+      if (!condition) throw new Error(msg || 'Assertion failed');
+    }
+    function assertEqual(a, b, msg) {
+      if (a !== b) throw new Error(msg || `Expected ${b}, got ${a}`);
+    }
+
+    // ===== 测试：网格初始化 =====
+    test('8x8 网格初始化，64 个格子全未揭开', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      assertEqual(g.cells.length, 64);
+      assert(g.cells.every(c => !c.revealed && !c.flagged && !c.mine), '所有格子应为初始状态');
+    });
+
+    test('状态初始为 idle', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      assertEqual(g.state, 'idle');
+    });
+
+    // ===== 测试：首次点击保护 =====
+    test('首次点击后生成地雷，点击位置无雷', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      g.reveal(0); // 点击索引 0
+      const cell0 = g.cells[0];
+      assert(!cell0.mine, '首次点击位置不应有雷');
+      const mineCount = g.cells.filter(c => c.mine).length;
+      assertEqual(mineCount, 10, '应生成 10 个地雷');
+    });
+
+    test('首次点击后状态变为 playing', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      g.reveal(0);
+      assertEqual(g.state, 'playing');
+    });
+
+    // ===== 测试：邻居计算 =====
+    test('角落格子（索引0）邻居数为 3', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      const neighbors = g.getNeighborIndices(0);
+      assertEqual(neighbors.length, 3);
+    });
+
+    test('中间格子（索引 9，即 row=1,col=1）邻居数为 8', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      const neighbors = g.getNeighborIndices(9); // row=1,col=1
+      assertEqual(neighbors.length, 8);
+    });
+
+    // ===== 测试：地雷生成 =====
+    test('生成的地雷数量正确', () => {
+      const g = new MinesweeperGame(16, 16, 40);
+      g.reveal(0);
+      const mineCount = g.cells.filter(c => c.mine).length;
+      assertEqual(mineCount, 40);
+    });
+
+    test('首次点击及其邻格无雷（多次随机验证）', () => {
+      // 运行 50 次：只要 _placeMines 逻辑正确，此测试必定通过
+      for (let i = 0; i < 50; i++) {
+        const g = new MinesweeperGame(8, 8, 10);
+        const clickIdx = 27; // row=3, col=3，有完整 8 个邻格
+        g.reveal(clickIdx);
+        const safeZone = new Set([clickIdx, ...g.getNeighborIndices(clickIdx)]);
+        const violated = [...safeZone].filter(idx => g.cells[idx].mine);
+        assert(violated.length === 0,
+          `第 ${i+1} 次：安全区域格子 ${violated} 有雷`);
+      }
+    });
+
+    // ===== 测试：BFS 自动展开 =====
+    test('揭开空白格时 BFS 自动展开（确定性测试）', () => {
+      // 构造确定性场景：4x4 grid，雷在最后一格[15]
+      // 点击[0]：邻格数全为0，BFS 应展开所有非雷格
+      const g = new MinesweeperGame(4, 4, 1);
+      g._placeMinesManual([15]); // 雷在右下角
+      g.reveal(0); // 点左上角
+      // [0-14] 均无雷，[0]邻格[1,4,5]均为0周边数，BFS 展开所有非雷格
+      const revealedCount = g.cells.filter(c => c.revealed).length;
+      const nonMineCount = g.cells.filter(c => !c.mine).length;
+      assertEqual(revealedCount, nonMineCount, `BFS 应揭开全部 ${nonMineCount} 个非雷格，实际揭开 ${revealedCount}`);
+    });
+
+    // ===== 测试：旗帜切换 =====
+    test('插旗/取旗切换正确', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      g.reveal(5); // 触发 playing 状态
+      g.toggleFlag(10);
+      assert(g.cells[10].flagged, '应已插旗');
+      g.toggleFlag(10);
+      assert(!g.cells[10].flagged, '应已取旗');
+    });
+
+    test('已揭开的格子不能插旗', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      g.reveal(0);
+      if (g.cells[0].revealed) {
+        g.toggleFlag(0);
+        assert(!g.cells[0].flagged, '已揭开的格子不能插旗');
+      }
+    });
+
+    // ===== 测试：胜利条件 =====
+    test('揭开所有非雷格后状态为 won', () => {
+      const g = new MinesweeperGame(4, 4, 1);
+      // _placeMinesManual 设置 state=PLAYING, _minesReady=true, _firstClick=true
+      // 第一次 reveal 会进入 _firstClick 分支但因 _minesReady=true 不会重新布雷
+      g._placeMinesManual([15]); // 雷在最后一格（索引15）
+      // 逐格揭开 0-14（均非雷），BFS 可能批量揭开
+      g.reveal(0); // 触发首次点击流程，_firstClick=false
+      // 若 BFS 已全部揭开则直接检查，否则继续揭开
+      for (let i = 1; i < 15; i++) {
+        if (!g.cells[i].revealed) g.reveal(i);
+      }
+      assertEqual(g.state, 'won', `揭开所有非雷格后应为 won，实际状态：${g.state}`);
+    });
+
+    // ===== 测试：失败条件 =====
+    test('点击地雷后状态为 lost', () => {
+      const g = new MinesweeperGame(4, 4, 1);
+      g._placeMinesManual([5]);
+      g.reveal(0); // 先触发 playing
+      g.reveal(5); // 踩雷
+      assertEqual(g.state, 'lost');
+    });
+
+    // ===== 测试：模式 =====
+    test('默认模式为 reveal', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      assertEqual(g.mode, MODES.REVEAL);
+    });
+
+    test('切换模式', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      g.setMode(MODES.FLAG);
+      assertEqual(g.mode, MODES.FLAG);
+      g.setMode(MODES.POSITION);
+      assertEqual(g.mode, MODES.POSITION);
+    });
+
+    // ===== 测试：重置 =====
+    test('reset 后状态回到 idle，格子全清空', () => {
+      const g = new MinesweeperGame(8, 8, 10);
+      g.reveal(0); // playing
+      g.reset();
+      assertEqual(g.state, 'idle');
+      assert(g._firstClick, 'reset 后 _firstClick 应为 true');
+      assert(g.cells.every(c => !c.mine && !c.revealed && !c.flagged), '所有格子应清空');
+      assertEqual(g.elapsed, 0, 'elapsed 应重置为 0');
+    });
+
+    // 渲染结果
+    const div = document.getElementById('results');
+    const passed = results.filter(r => r.pass).length;
+    div.innerHTML = `<p>${passed}/${results.length} 测试通过</p>` +
+      results.map(r => `<div class="${r.pass ? 'pass' : 'fail'}">
+        ${r.pass ? '✓' : '✗'} ${r.name}
+        ${r.pass ? '' : `<pre>${r.error}</pre>`}
+      </div>`).join('');
+  </script>
+</body>
+</html>
