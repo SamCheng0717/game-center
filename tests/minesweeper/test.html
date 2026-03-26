@@ -14,7 +14,7 @@
   <h2>扫雷逻辑测试</h2>
   <div id="results"></div>
   <script type="module">
-    import { MinesweeperGame, MODES } from '/games/minesweeper/game.js';
+    import { MinesweeperGame, MODES, STATES } from '/games/minesweeper/game.js';
 
     const results = [];
     function test(name, fn) {
@@ -42,6 +42,10 @@
     test('状态初始为 idle', () => {
       const g = new MinesweeperGame(8, 8, 10);
       assertEqual(g.state, 'idle');
+      assertEqual(STATES.IDLE, 'idle');
+      assertEqual(STATES.PLAYING, 'playing');
+      assertEqual(STATES.WON, 'won');
+      assertEqual(STATES.LOST, 'lost');
     });
 
     // ===== 测试：首次点击保护 =====
