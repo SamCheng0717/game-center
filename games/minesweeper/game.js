@@ -160,9 +160,14 @@ export class MinesweeperGame {
 
   // === 计时器 ===
   _startTimer() {
+    if (this._timerInterval !== null) return; // 防止重复启动
     this._timerInterval = setInterval(() => { this.elapsed++; }, 1000);
   }
-  _stopTimer() { clearInterval(this._timerInterval); }
+  _stopTimer() {
+    clearInterval(this._timerInterval);
+    this._timerInterval = null;
+  }
+  /** 从持久化恢复后调用，仅在 PLAYING 状态下恢复计时 */
   resumeTimer() { if (this.state === STATES.PLAYING) this._startTimer(); }
 
   // === 计算属性 ===
