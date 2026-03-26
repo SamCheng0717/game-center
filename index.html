@@ -9,22 +9,132 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="小游戏">
+  <meta name="theme-color" content="#0d0d0d">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0d0d0d">
   <meta property="og:title" content="骚雷 - 手机扫雷游戏">
   <meta property="og:description" content="在手机上玩经典扫雷，支持离线，六套主题">
   <meta property="og:type" content="website">
   <meta property="og:image" content="/icons/icon-512.png">
   <link rel="canonical" href="/">
+  <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="/shared/themes.css">
+  <link rel="stylesheet" href="/shared/components.css">
+  <style>
+    .launcher {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 0 16px 16px;
+    }
+    .launcher-header {
+      padding: 20px 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .launcher-header h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    .game-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--toolbar-border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: transform 0.1s, opacity 0.1s;
+    }
+    .game-card:active { transform: scale(0.98); opacity: 0.8; }
+    .game-card .icon { font-size: 2.2rem; width: 48px; text-align: center; }
+    .game-card h2 { margin: 0 0 4px; font-size: 1rem; }
+    .game-card p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+    .game-card.coming-soon { opacity: 0.4; }
+    .soon-badge {
+      margin-left: auto;
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      background: var(--toolbar-border);
+      color: var(--text-muted);
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .launcher-desc {
+      margin: 0 0 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+  </style>
 </head>
 <body>
-  <p>骨架搭建中...</p>
-  <script>
+  <main class="launcher">
+    <div class="launcher-header">
+      <h1>🎮 小游戏</h1>
+      <button class="theme-toggle-btn" id="theme-btn" aria-label="切换主题">🎨</button>
+    </div>
+
+    <p class="launcher-desc">
+      经典小游戏合集，专为手机优化。支持离线游玩，添加到主屏幕体验更佳。
+    </p>
+
+    <section aria-label="游戏列表">
+      <a href="/games/minesweeper/" class="game-card">
+        <span class="icon">💣</span>
+        <div>
+          <h2>扫雷</h2>
+          <p>四档难度 · 放大镜精准操作 · 六套主题</p>
+        </div>
+      </a>
+
+      <div class="game-card coming-soon" aria-label="即将推出">
+        <span class="icon">🕷️</span>
+        <div>
+          <h2>蜘蛛纸牌</h2>
+          <p>经典接龙游戏</p>
+        </div>
+        <span class="soon-badge">即将推出</span>
+      </div>
+
+      <div class="game-card coming-soon" aria-label="即将推出">
+        <span class="icon">🀄</span>
+        <div>
+          <h2>连连看</h2>
+          <p>消除类益智游戏</p>
+        </div>
+        <span class="soon-badge">即将推出</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- 主题选择器抽屉 -->
+  <div class="theme-overlay" id="theme-overlay">
+    <div class="theme-drawer" id="theme-drawer">
+      <h3>选择主题</h3>
+      <div class="theme-grid" id="theme-grid"></div>
+    </div>
+  </div>
+
+  <!-- PWA 提示横幅 -->
+  <div class="pwa-banner" id="pwa-banner">
+    <span>📱 添加到主屏幕后进度永久保存</span>
+    <button onclick="document.getElementById('pwa-banner').classList.remove('show')">×</button>
+  </div>
+
+  <script type="module">
+    import { initThemeSwitcher, showPWABanner } from '/shared/theme-switcher.js';
+    initThemeSwitcher('#theme-btn', '#theme-overlay', '#theme-drawer', '#theme-grid');
+    showPWABanner();
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('SW registered'))
-        .catch(e => console.error('SW failed:', e));
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
   </script>
 </body>
