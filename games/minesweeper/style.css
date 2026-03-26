@@ -95,7 +95,7 @@
   position: absolute;
   display: grid;
   /* grid-template-columns 由 JS 动态设置为 5 列 */
-  transform-origin: center center;
+  transform-origin: 0 0; /* JS 用 left/top 手动定位，缩放以左上角为原点 */
 }
 
 /* 放大镜中心十字准星 */

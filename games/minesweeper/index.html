@@ -419,10 +419,11 @@
       wrapper.addEventListener('touchend', e => {
         e.preventDefault();
         magnifier.classList.remove('visible');
-        if (lastCellIdx >= 0) {
+        if (!isDragging && lastCellIdx >= 0) {
           handleCellAction(lastCellIdx);
         }
         lastCellIdx = -1;
+        isDragging = false;
       }, { passive: false });
     }
 
